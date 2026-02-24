@@ -259,7 +259,14 @@
       });
 
       if (!response.ok) {
-        throw new Error(`Server error: ${response.status}`);
+        let errMsg = `Server error: ${response.status}`;
+        try {
+          const errBody = await response.json();
+          if (errBody.error) errMsg = errBody.error;
+        } catch (e) {
+          // Response wasn't JSON — use the status code message
+        }
+        throw new Error(errMsg);
       }
 
       const reader = response.body.getReader();
@@ -301,7 +308,10 @@
       // Add copy button now that we have the full text
       header.appendChild(createCopyButton(fullText));
     } catch (err) {
-      body.innerHTML = `<p style="color: var(--red);">Something went wrong: ${escapeHtml(err.message)}. Please try again.</p>`;
+      // Remove the failed user message so the user can retry
+      conversationHistory.pop();
+      saveSession();
+      body.innerHTML = `<p style="color: var(--red);">${escapeHtml(err.message)}</p>`;
     } finally {
       isStreaming = false;
       sendBtn.disabled = false;
