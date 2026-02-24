@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Happy-Maker | Cognitive Reappraisal Trainer</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Intake Screen -->
+    <div id="intake-screen" class="screen active">
+      <header class="intake-header">
+        <h1>Happy-Maker</h1>
+        <p class="subtitle">Evidence-Based Cognitive Reappraisal Trainer</p>
+        <p class="description">
+          Optimism is a trainable skill, not a fixed trait. Research from Harvard, UCSF, and meta-analyses
+          across 229,391 participants shows that structured cognitive reappraisal reduces cardiovascular
+          risk by 35% and increases odds of reaching age 85 by 1.5&ndash;1.7x.
+        </p>
+        <p class="description">
+          This tool applies the ABCDE reappraisal framework to your specific situation
+          and builds a personalized protocol targeting the neural pathways that drive pessimistic thinking.
+        </p>
+      </header>
+
+      <form id="intake-form">
+        <div class="form-group">
+          <label for="challenge">
+            What's your current challenge, stressor, or recurring negative thought?
+          </label>
+          <textarea
+            id="challenge"
+            name="challenge"
+            rows="4"
+            placeholder="Describe what's weighing on you. Be as specific as you can — the more detail, the more targeted the reappraisal."
+            required
+          ></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="stress-level">Current stress level (1-10)</label>
+            <div class="stress-slider">
+              <input
+                type="range"
+                id="stress-level"
+                name="stress_level"
+                min="1"
+                max="10"
+                value="5"
+              >
+              <div class="stress-labels">
+                <span>1 — Mild</span>
+                <span id="stress-value" class="stress-current">5</span>
+                <span>10 — Severe</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="time-commitment">Daily time commitment</label>
+            <select id="time-commitment" name="time_commitment">
+              <option value="5">5 minutes</option>
+              <option value="10" selected>10 minutes</option>
+              <option value="15">15 minutes</option>
+              <option value="20">20 minutes</option>
+              <option value="30">30+ minutes</option>
+            </select>
+          </div>
+        </div>
+
+        <button type="submit" id="start-btn">
+          Begin Reappraisal Training
+        </button>
+      </form>
+    </div>
+
+    <!-- Chat Screen -->
+    <div id="chat-screen" class="screen">
+      <header class="chat-header">
+        <button id="back-btn" class="icon-btn" title="Start over">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M12 4L6 10L12 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <div>
+          <h1>Happy-Maker</h1>
+          <p class="session-label">Reappraisal Session</p>
+        </div>
+      </header>
+
+      <div id="chat-messages" class="chat-messages"></div>
+
+      <form id="chat-form" class="chat-input-area">
+        <textarea
+          id="chat-input"
+          placeholder="Ask a follow-up question, describe a new situation, or request adjustments to your plan..."
+          rows="1"
+        ></textarea>
+        <button type="submit" id="send-btn" title="Send">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M3 10L17 3L10 17L9 11L3 10Z" fill="currentColor"/>
+          </svg>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

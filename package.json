@@ -1,0 +1,14 @@
+{
+  "name": "happy-maker",
+  "version": "1.0.0",
+  "description": "Cognitive Reappraisal Trainer — an evidence-based optimism training tool powered by Claude",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.52.0",
+    "express": "^4.21.0"
+  }
+}
