@@ -1,12 +1,40 @@
 const express = require("express");
+const rateLimit = require("express-rate-limit");
 const Anthropic = require("@anthropic-ai/sdk").default;
 const { SYSTEM_PROMPT } = require("./system-prompt");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(express.json());
+// Small bodies only: a chat turn never needs more than this, and it keeps
+// someone from posting megabytes at the model on our key.
+app.use(express.json({ limit: "64kb" }));
 app.use(express.static("public"));
+
+// Cap how often one visitor can hit the model. Without this, anyone who finds
+// the URL can run up the Anthropic bill with a script.
+const chatLimiter = rateLimit({
+  windowMs: 10 * 60 * 1000,
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: "Too many requests. Please wait a few minutes and try again." },
+});
+
+const MAX_MESSAGES = 30;
+const MAX_MESSAGE_CHARS = 4000;
+
+function validMessages(messages) {
+  if (!Array.isArray(messages) || messages.length === 0 || messages.length > MAX_MESSAGES) return false;
+  return messages.every(
+    (m) =>
+      m &&
+      (m.role === "user" || m.role === "assistant") &&
+      typeof m.content === "string" &&
+      m.content.length > 0 &&
+      m.content.length <= MAX_MESSAGE_CHARS
+  );
+}
 
 let client;
 try {
@@ -15,7 +43,7 @@ try {
   console.error("Failed to initialize Anthropic client:", err.message);
 }
 
-app.post("/api/chat", async (req, res) => {
+app.post("/api/chat", chatLimiter, async (req, res) => {
   if (!client) {
     return res.status(500).json({
       error:
@@ -25,8 +53,10 @@ app.post("/api/chat", async (req, res) => {
 
   const { messages } = req.body;
 
-  if (!messages || !Array.isArray(messages) || messages.length === 0) {
-    return res.status(400).json({ error: "messages array is required" });
+  if (!validMessages(messages)) {
+    return res.status(400).json({
+      error: `messages must be 1 to ${MAX_MESSAGES} user/assistant turns, each up to ${MAX_MESSAGE_CHARS} characters`,
+    });
   }
 
   res.setHeader("Content-Type", "text/event-stream");
